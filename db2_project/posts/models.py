@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.conf import settings
 
 
 class Profile(models.Model):
@@ -27,4 +28,6 @@ class Post(models.Model):
     description = models.TextField(max_length=500)
     body = models.TextField(max_length=1000)
     image = models.TextField(max_length=200)
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='post_likes')
+
 

@@ -10,6 +10,7 @@ from django.template.loader import render_to_string
 from .forms import SignUpForm
 from .tokens import account_activation_token
 from .models import Post
+from django.http import Http404
 
 @login_required
 def home(request):
@@ -76,3 +77,10 @@ def index(request):
 
     return render(request, 'user_list.html', { 'posts': posts })
 
+
+def detail(request, post_id):
+    try:
+        post = Post.objects.get(pk=post_id)
+    except Post.DoesNotExist:
+        raise Http404("Question does not exist")
+    return render(request, 'polls/detail.html', {'post': post})

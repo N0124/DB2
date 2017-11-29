@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         posts_views.activate, name='activate'),
     url(r'^index$', posts_views.index, name='home'),
+    url(r'^(?P<post_id>[0-9]+)/$', posts_views.detail, name='detail'),
 
 
 ]
