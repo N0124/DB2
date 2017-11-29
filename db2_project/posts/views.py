@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
-
+from django.http import JsonResponse
 from .forms import SignUpForm, CommentForm
 from .tokens import account_activation_token
 from .models import Post
@@ -65,7 +65,7 @@ def activate(request, uidb64, token):
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-
+@login_required
 def index(request):
     post_list = Post.objects.all().order_by('title')
     page = request.GET.get('page', 1)
@@ -78,9 +78,10 @@ def index(request):
     except EmptyPage:
         posts = paginator.page(paginator.num_pages)
 
-    return render(request, 'user_list.html', { 'posts': posts })
+    liked_post = request.user.post_likes.all()
+    return render(request, 'user_list.html', { 'posts': posts, 'liked_post': liked_post})
 
-
+@login_required
 def detail(request, post_id):
     try:
         post = Post.objects.get(pk=post_id)
@@ -98,7 +99,7 @@ def detail(request, post_id):
         comments = paginator.page(paginator.num_pages)
     return render(request, 'detail.html', {'post': post, 'comments':comments})
 
-
+@login_required
 def add_comment_to_post(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
@@ -111,3 +112,16 @@ def add_comment_to_post(request, pk):
     else:
         form = CommentForm()
     return render(request, 'add_comment_to_post.html', {'form': form})
+
+
+def add_like(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    post.likes.add(request.user)
+    return JsonResponse({'likes': post.likes.count()})
+
+
+def remove_like(request, post_id):
+    post = get_object_or_404(Post, pk=post_id)
+    post.likes.remove(request.user)
+    return JsonResponse({'likes': post.likes.count()})
+
