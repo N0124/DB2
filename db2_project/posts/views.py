@@ -7,10 +7,12 @@ from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 
-from .forms import SignUpForm
+from .forms import SignUpForm, CommentForm
 from .tokens import account_activation_token
 from .models import Post
+from django.shortcuts import get_object_or_404
 from django.http import Http404
+
 
 @login_required
 def home(request):
@@ -63,6 +65,7 @@ def activate(request, uidb64, token):
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
+
 def index(request):
     post_list = Post.objects.all().order_by('title')
     page = request.GET.get('page', 1)
@@ -83,4 +86,28 @@ def detail(request, post_id):
         post = Post.objects.get(pk=post_id)
     except Post.DoesNotExist:
         raise Http404("Question does not exist")
-    return render(request, 'polls/detail.html', {'post': post})
+    comment_list = post.comments.all().order_by('-created_date')
+    page = request.GET.get('page', 1)
+
+    paginator = Paginator(comment_list, 2)
+    try:
+        comments = paginator.page(page)
+    except PageNotAnInteger:
+        comments = paginator.page(1)
+    except EmptyPage:
+        comments = paginator.page(paginator.num_pages)
+    return render(request, 'detail.html', {'post': post, 'comments':comments})
+
+
+def add_comment_to_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.save()
+            return redirect('detail', post_id=post.pk)
+    else:
+        form = CommentForm()
+    return render(request, 'add_comment_to_post.html', {'form': form})

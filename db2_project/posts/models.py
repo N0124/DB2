@@ -1,8 +1,11 @@
+
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
+from django.utils import timezone
 
 
 class Profile(models.Model):
@@ -31,3 +34,12 @@ class Post(models.Model):
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='post_likes')
 
 
+class Comment(models.Model):
+    post = models.ForeignKey('Post', related_name='comments')
+    author = models.CharField(max_length=200)
+    text = models.TextField()
+    created_date = models.DateTimeField(default=timezone.now)
+
+
+    def __str__(self):
+        return self.text

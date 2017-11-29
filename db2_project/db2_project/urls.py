@@ -28,6 +28,7 @@ urlpatterns = [
         posts_views.activate, name='activate'),
     url(r'^index$', posts_views.index, name='home'),
     url(r'^(?P<post_id>[0-9]+)/$', posts_views.detail, name='detail'),
+    url(r'^(?P<pk>\d+)/comment/$', posts_views.add_comment_to_post, name='add_comment_to_post'),
 
 
 ]
