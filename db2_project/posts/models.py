@@ -33,13 +33,15 @@ class Post(models.Model):
     image = models.TextField(max_length=200)
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='post_likes')
 
+    class Meta:
+        ordering = ['-title']
+
 
 class Comment(models.Model):
     post = models.ForeignKey('Post', related_name='comments')
     author = models.CharField(max_length=200)
     text = models.TextField()
     created_date = models.DateTimeField(default=timezone.now)
-
 
     def __str__(self):
         return self.text

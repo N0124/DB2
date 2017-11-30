@@ -1,13 +1,10 @@
 {% extends 'base.html' %}
 
-{# Load the tag library #}
-{% load bootstrap3 %}
-
-{# Load CSS and JavaScript #}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-
 {% block content %}
+<form type="get" action="" style="margin: 0">
+    <input  id="search_box" type="text" name="search_box"  placeholder="Search..." >
+    <button id="search_submit" type="submit" >Submit</button>
+</form>
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -28,7 +25,7 @@
           <div id="likes{{post.id}}">{{ post.likes.count }}
         </div>
 
-          <button id="button_dislike{{post.id}}" {% if post not in liked_post %}  style='display: none;' {%endif%} onclick="remove_like({{post.id}})">Dislike</button>
+          <button id="button_dislike{{post.id}}" {% if post not in liked_post %}  style='display: none;' {%endif%} onclick="remove_like({{post.id}})">Like</button>
 
         <button  id="button_like{{post.id}}" {% if post in liked_post %}  style='display: none;' {%endif%} onclick="add_like({{post.id}})">Like</button>
         </td>
@@ -58,23 +55,6 @@
     {% endif %}
   </ul>
 {% endif %}
-<script>
-  function add_like(post_id){
-    $.get('like/'+post_id, function (likes){
-      $('#button_like'+post_id).hide()
-      $('#button_dislike'+post_id).show()
-      $('#likes'+post_id).html(likes.likes)
-    })
-  }
-  function remove_like(post_id){
-    $.get('dislike/'+post_id, function (likes){
-      $('#button_dislike'+post_id).hide()
-      $('#button_like'+post_id).show()
-      $('#likes'+post_id).html(likes.likes)
-    })
-  }
-
-</script>
 {% endblock %}
 
 

@@ -12,11 +12,8 @@ from .tokens import account_activation_token
 from .models import Post
 from django.shortcuts import get_object_or_404
 from django.http import Http404
-
-
-@login_required
-def home(request):
-    return render(request, 'home.html')
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 
 def signup(request):
@@ -63,13 +60,12 @@ def activate(request, uidb64, token):
     else:
         return render(request, 'account_activation_invalid.html')
 
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 @login_required
 def index(request):
+
     post_list = Post.objects.all().order_by('title')
     page = request.GET.get('page', 1)
-
     paginator = Paginator(post_list, 2)
     try:
         posts = paginator.page(page)
@@ -78,8 +74,19 @@ def index(request):
     except EmptyPage:
         posts = paginator.page(paginator.num_pages)
 
+    if request.GET.get('search_box'):
+        query = request.GET.get('search_box')
+        if query:
+            posts = Post.objects.filter(
+                Q(title__contains=query)|
+                Q(body__contains=query)|
+                Q(description__contains=query)
+            )
+
     liked_post = request.user.post_likes.all()
-    return render(request, 'user_list.html', { 'posts': posts, 'liked_post': liked_post})
+
+    return render(request, 'post_list.html', {'posts': posts, 'liked_post': liked_post})
+
 
 @login_required
 def detail(request, post_id):
@@ -97,7 +104,8 @@ def detail(request, post_id):
         comments = paginator.page(1)
     except EmptyPage:
         comments = paginator.page(paginator.num_pages)
-    return render(request, 'detail.html', {'post': post, 'comments':comments})
+    return render(request, 'detail.html', {'post': post, 'comments': comments})
+
 
 @login_required
 def add_comment_to_post(request, pk):
