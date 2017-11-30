@@ -62,9 +62,13 @@ def activate(request, uidb64, token):
 
 
 @login_required
-def index(request):
-
-    post_list = Post.objects.all().order_by('title')
+def index(request, order_by='asc'):
+    if order_by == 'desc':
+        post_list = Post.objects.all().order_by('-title')
+        reverse_order = 'asc'
+    else:
+        post_list = Post.objects.all().order_by('title')
+        reverse_order = 'desc'
     page = request.GET.get('page', 1)
     paginator = Paginator(post_list, 2)
     try:
@@ -85,7 +89,8 @@ def index(request):
 
     liked_post = request.user.post_likes.all()
 
-    return render(request, 'post_list.html', {'posts': posts, 'liked_post': liked_post})
+    return render(request, 'post_list.html', {'posts': posts, 'liked_post': liked_post, 'order': order_by,
+                                              'reverse': reverse_order})
 
 
 @login_required

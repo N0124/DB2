@@ -1,8 +1,8 @@
 def handle_numbers(x, y, z):
     if z == 0:
-        return "You can't divide by zero"
+        raise ZeroDivisionError("Parameter z shouldn't be zero")
     if x > y:
-        x, y = y, x
+        raise ValueError('Parameter y should be greater than x')
 
     return len([n for n in range(x, y + 1) if n % z == 0])
 
@@ -13,7 +13,7 @@ def handle_string(value):
     for i in value:
         if i.isalpha():
             letters += 1
-        if i.isdigit():
+        elif i.isdigit():
             digits += 1
 
     return 'There are %s letters and %s digits' % (letters, digits)

@@ -8,7 +8,14 @@
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th>Title</th>
+      <th><a href="{%url 'home_sorted' reverse %}">Title
+        {% if order == 'desc'  %}
+        <span class="glyphicon glyphicon-triangle-bottom"></span>
+        {% else %}
+        <span class="glyphicon glyphicon-triangle-top"></span>
+        {%endif%}
+      </a>
+      </th>
       <th>Body</th>
       <th>Image</th>
       <th>Likes</th>
@@ -19,7 +26,7 @@
       <tr>
         <td><a href="/post/{{ post.id }}/">{{ post.title }}</a></td>
         <td>{{ post.description }}</td>
-        <td>{{ post.image }}</td>
+        <td><img src="{{ post.image }}"/></td>
 
         <td>
           <div id="likes{{post.id}}">{{ post.likes.count }}

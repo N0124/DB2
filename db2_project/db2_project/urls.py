@@ -25,11 +25,13 @@ urlpatterns = [
     url(r'^account_activation_sent/$', posts_views.account_activation_sent, name='account_activation_sent'),
     url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         posts_views.activate, name='activate'),
-    url(r'^index$', posts_views.index, name='home'),
+    url(r'^index/(?P<order_by>asc|desc)/$', posts_views.index, name='home_sorted'),
+    url(r'^index/$', posts_views.index, name='home'),
     url(r'^post/(?P<post_id>[0-9]+)/$', posts_views.detail, name='detail'),
     url(r'^post/(?P<pk>\d+)/comment/$', posts_views.add_comment_to_post, name='add_comment_to_post'),
     url(r'^like/(?P<post_id>[0-9]+)$', posts_views.add_like, name='add_like'),
     url(r'^dislike/(?P<post_id>[0-9]+)$', posts_views.remove_like, name='remove_like'),
+    url(r'^$', posts_views.index, name='home_default'),
 
 
 ]
